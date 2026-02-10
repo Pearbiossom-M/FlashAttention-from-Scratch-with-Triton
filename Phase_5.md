@@ -73,6 +73,8 @@ def timing(run_fn, warmup=10, repeat=30):
 * **Triton FlashAttention（本文实现）**：基于 online softmax 的流式计算
 * **PyTorch SDPA（官方实现）**：高度优化的工业级实现，作为性能参考上限
 
+> 完整的性能测试代码见于：[FlashAttention-from-Scratch-with-Triton/code/Performance_Comparison.py at main · Pearbiossom-M/FlashAttention-from-Scratch-with-Triton](https://github.com/Pearbiossom-M/FlashAttention-from-Scratch-with-Triton/blob/main/code/Performance_Comparison.py)
+
 结果如下：
 
 <img src="./images/D_64_causal_fwd_bwd.png" style="zoom: 33%;" />
@@ -187,6 +189,11 @@ def flash_attention_forward(Q, K, V, is_causal):
     return O, LSE
 ```
 
+> 完整代码见于：
+>
+> * [FlashAttention-from-Scratch-with-Triton/code/My_FlashAttention_optimized.py at main · Pearbiossom-M/FlashAttention-from-Scratch-with-Triton](https://github.com/Pearbiossom-M/FlashAttention-from-Scratch-with-Triton/blob/main/code/My_FlashAttention_optimized.py)
+> * [FlashAttention-from-Scratch-with-Triton/code/_flash_attention_kernel_optimized.py at main · Pearbiossom-M/FlashAttention-from-Scratch-with-Triton](https://github.com/Pearbiossom-M/FlashAttention-from-Scratch-with-Triton/blob/main/code/_flash_attention_kernel_optimized.py)
+
 由于该实验是在消费级显卡 RTX 5060ti 上进行的，在 `fwd_bwd` 模式下，未优化的原始实现不支持 `D=128` 的情况，所以上述配置不涉及 `D=128`。当你在支持 `D=128` 的专业 GPU （H200、B200等）上运行时，建议进行以下调整：
 
 * 将自动调优的搜索范围进一步扩大，明确包含 D = 128 这一选项
@@ -289,6 +296,11 @@ desc_q = TensorDescriptor(
 ### 5.3.3 代码实现
 
 以 `flash_attention_forward` 为例，`flash_attention_backward` 同理。
+
+> 完整代码见于：
+>
+> * [FlashAttention-from-Scratch-with-Triton/code/My_FlashAttention_optimized.py at main · Pearbiossom-M/FlashAttention-from-Scratch-with-Triton](https://github.com/Pearbiossom-M/FlashAttention-from-Scratch-with-Triton/blob/main/code/My_FlashAttention_optimized.py)
+> * [FlashAttention-from-Scratch-with-Triton/code/_flash_attention_kernel_optimized.py at main · Pearbiossom-M/FlashAttention-from-Scratch-with-Triton](https://github.com/Pearbiossom-M/FlashAttention-from-Scratch-with-Triton/blob/main/code/_flash_attention_kernel_optimized.py)
 
 ```python
 import triton
@@ -515,6 +527,11 @@ def flash_attention_forward(Q, K, V, is_causal):
 ### 5.4.2 代码实现
 
 首先，修改 `flash_attention_dQ_kernel`，只需增加保存 `delta` 的功能即可：
+
+> 完整代码见于：
+>
+> * [FlashAttention-from-Scratch-with-Triton/code/My_FlashAttention_optimized.py at main · Pearbiossom-M/FlashAttention-from-Scratch-with-Triton](https://github.com/Pearbiossom-M/FlashAttention-from-Scratch-with-Triton/blob/main/code/My_FlashAttention_optimized.py)
+> * [FlashAttention-from-Scratch-with-Triton/code/_flash_attention_kernel_optimized.py at main · Pearbiossom-M/FlashAttention-from-Scratch-with-Triton](https://github.com/Pearbiossom-M/FlashAttention-from-Scratch-with-Triton/blob/main/code/_flash_attention_kernel_optimized.py)
 
 ```python
 def _host_descriptor_pre_hook_bwd_dQ(nargs):
