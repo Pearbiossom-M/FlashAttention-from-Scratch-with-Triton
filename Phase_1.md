@@ -1,4 +1,4 @@
-# Phase 1：Naive Attention —— 暴力实现的死胡同
+# 从零实现 FlashAttention（Phase 1）：Naive Attention —— 暴力实现的死胡同
 
 目标：实现一个逻辑正确，但物理上会被 SRAM 容量限制死的 Naive Attention。让大家亲眼看到 SRAM 是如何被随序列长度增大的中间矩阵撑爆的，从而理解为什么 K 和 V 矩阵必须分块？为什么必须引入 online softmax？
 

@@ -1,12 +1,12 @@
-# Phase 4：反向传播 —— Recomputation 的智慧
+# 从零实现 FlashAttention（Phase 4）：反向传播 —— Recomputation 的智慧
 
-**目标**：
+目标：
 
 - 掌握 FlashAttention backward 的数学原理和 recomputation 策略
 - 实现 dQ 和 dKV 两个 backward kernel
 - 将 FlashAttention 集成到 PyTorch 的 autograd 系统中
 
-**说明**：
+说明：
 
 - 本章专注于**算法正确性**，性能优化留到 Phase 5
 
@@ -162,7 +162,7 @@ P_ij = exp(S_ij - m_i) / l_i
 
 ### 4.2.2 为什么使用 Recomputation？
 
-这里大家可能会有一个疑问，为什么一定要使用 **Recomputation 重建 `P`** 呢？
+这里大家可能会有一个疑问，为什么一定要**使用 Recomputation 重建 `P`** 呢？
 
 主要原因有两点：
 
@@ -171,7 +171,7 @@ P_ij = exp(S_ij - m_i) / l_i
 
 这里对比一下两种策略的访存开销：
 
-|          | 策略 A                         | 策略 B                                                   |
+|          | 策略 A —— 存 P                 | 策略 B —— Recomputation                                  |
 | -------- | ------------------------------ | -------------------------------------------------------- |
 | Forward  | 写 `P` 到 HBM —— $O(N^2)$ 访存 | 写 `LSE` 到 HBM —— $O(N)$ 访存                           |
 | Backward | 从 HBM 读 `P` —— $O(N^2)$ 访存 | 从 HBM 读 `LSE`，重算 `P` —— $O(N)$ 访存 + $O(N^2)$ 计算 |
@@ -1025,12 +1025,12 @@ compare_with_sdpa(Q, K, V, is_causal=True) # ✅ Test Passed!
 
 虽然我们的算子已经“能用”了，但在“好用”之前，还有一段路要走。目前的实现中，我们还存在许多性能瓶颈：
 
-- Shared Memory 是否避免了 Bank Conflict？
+- kernel 内大量地址计算引入额外的指令与寄存器占用，怎么解决？
 - 流水线（Pipeline）是否重叠？有没有气泡？
 - Block 大小选择是否最优？
 - ……
 
-在接下来的 **Phase 5** 中，我们将不再关注新的功能，而是带上“性能显微镜”，深入 GPU 架构的微观世界。我们将学习 Swizzle、Vectorization、Pipeline 等高级技巧，让我们的 FlashAttention 真正飞起来！
+在接下来的 **Phase 5** 中，我们将不再关注新的功能，而是带上“性能显微镜”，深入 GPU 架构的微观世界。我们将学习 Autotune、TensorDescriptor、计算流程优化等高级技巧，让我们的 FlashAttention 真正飞起来！
 
 准备好压榨 GPU 的最后一滴算力了吗？让我们进入 Phase 5 吧！
 

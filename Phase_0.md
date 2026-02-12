@@ -1,6 +1,6 @@
-# Phase 0：Attention 的计算模型与瓶颈
+# 从零实现 FlashAttention（Phase 0）：Attention 的计算模型与性能瓶颈
 
-**目标**：建立统一的 mental model，理解 Attention 的计算瓶颈和 FlashAttention 的解决思路。这一阶段完全不涉及代码实现。
+目标：建立统一的 mental model，理解 Attention 的计算瓶颈和 FlashAttention 的解决思路。这一阶段完全不涉及代码实现。
 
 ------
 
@@ -204,7 +204,7 @@ exp(m_old - m_new) × l_old + Σ exp(score_block - m_new)
 | **访存模式** | 频繁读写 HBM                       | 绝大部分在 SRAM 完成                                         |
 | **计算方式** | 先算完 S，再算完 P，再算 O         | 分块流式计算，边算边丢弃中间结果                             |
 | **本质**     | 算法优先                           | **硬件感知 (Hardware-aware)**                                |
-| **代价**     | 显存占用高，计算速度慢             | 前向传播中几乎不增加 FLOPs，反向传播通过 **recomputation** 用额外计算换取显存节省 |
+| **代价**     | 显存占用高，计算速度慢             | 前向传播中几乎不增加 FLOPs，<br />反向传播通过 **recomputation** 用额外计算换取显存节省 |
 
 关于 **Recomputation**：为了省显存，FlashAttention 在反向传播时不读取前向传播的 P 矩阵（所以不用存储 P），而是根据已有的 $Q, K, V$ 重新算一遍。这听起来疯了，但在 GPU 上反而更快，这一点我们会在 Phase 4 中详细讲解。
 

@@ -1,4 +1,4 @@
-# Phase 2：FlashAttention 的算法核心 —— 物理与逻辑的双重突围
+# 从零实现 FlashAttention（Phase 2）：FlashAttention 的算法核心 —— Online Softmax 与流式扫描
 
 目标：
 
@@ -349,4 +349,6 @@ def verify_results(bench, triton_output, name="Attention"):
 * FlashAttention 相比于标准 attention 改变了哪一步的计算顺序？
 * 为什么 Phase 1 的方案 B（Q/V 分块但不分块 K）会在 Triton 工程层面卡死，而 Phase 2 却能顺畅实现？
 
-如果你已经可以轻松回答，请先给自己束个大拇指👍，再说一句：老己，你真棒！然后，就可以进入下一章啦。在下一章（Phase 3）中，我们将逐步让这个 FlashAttention kernel 走向工业级，为其增加**通用性扩展和工程级优化**。加油！
+如果你已经可以轻松回答，请先给自己束个大拇指👍，再说一句：老己，你真棒！
+
+然后，就可以进入下一章啦。在下一章（Phase 3）中，我们将逐步让这个 FlashAttention kernel 走向工业级，为其增加**通用性扩展和工程级优化**。加油！
