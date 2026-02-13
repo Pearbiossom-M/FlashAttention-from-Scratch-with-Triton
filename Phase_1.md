@@ -6,7 +6,7 @@
 
 **在此处，我们会在代码中暂时借用 General Matrix Multiply（GEMM） 的 M/N/K 视角来描述 Attention。**
 
-这样做是因为在算法原型的探索阶段，我们将暂时忽略 Batch 和 Head 维度，专注于最核心的矩阵计算逻辑。此时，Attention 的计算本质上就是一个**分块矩阵乘 + online softmax**。使用大家熟悉的 GEMM 视角，可以降低认知负担，帮助我们专注于理解 Block（分块）、Tile（切片）的运作机制。
+这样做是因为在算法原型的探索阶段，我们将暂时忽略 Batch 和 Head 维度，专注于最核心的矩阵计算逻辑。此时，Attention 的计算本质上就是一个**分块矩阵乘 + online softmax**。使用大家熟悉的 GEMM 视角，可以降低认知负担，帮助我们专注于理解 Block、Tile 的运作机制。
 
 当我们在后续章节（**Phase 3**）完成核心逻辑的构建，准备将其扩展为支持多维 tensor 的工业级算子时，我们会再将命名回归到大家熟悉的 `Seq_len` / `Head_dim` 语义。加油！
 
