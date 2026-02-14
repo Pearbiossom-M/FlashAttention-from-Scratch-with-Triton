@@ -742,11 +742,11 @@ Note that warp specialization is only supported on Blackwell GPUs and only works
 
 * **为什么说当前性能已经“足够好”？**
 
-  从测试结果来看，本实现的性能曲线随序列长度增长稳定提升并趋于饱和，表明 kernel 已进入计算受限区间。在 Forward 场景下，性能已接近甚至局部追平 PyTorch 官方实现；在 Backward 及 fwd+bwd 场景中，稳定达到其 70%～80%。在 Triton 可表达的优化空间内，这一结果已接近可实现的上限。
+  从测试结果来看，本实现的性能曲线随序列长度增长稳定提升并趋于饱和，表明 kernel 的计算资源利用率已接近当前实现的上限。在 Forward 场景下，性能接近甚至局部追平 PyTorch 官方实现；在 Backward 及 fwd+bwd 场景中，稳定达到其 70%～80%。在 Triton 可表达的优化空间内，这一结果已接近可实现的上限。
 
 * **如果要更进一步，Triton 场景下是否可行？**
 
-  在 Triton 框架内，仍可通过更激进的 kernel fusion、配置搜索或减少中间结果重建获得有限提升，但依赖 persistent blocks、warp 级角色分工或跨 kernel 常驻状态的优化并不具备可行性。换言之，进一步的大幅提升需要进入 CUDA/PTX 层级，不再是 Triton 的目标使用场景。
+  在 Triton 框架内，仍可能通过更激进的 kernel fusion 和配置搜索获得有限提升，但依赖 persistent blocks、warp 级角色分工或跨 kernel 常驻状态的优化并不具备可行性。换言之，进一步的大幅提升需要进入 CUDA/PTX 层级，不再是 Triton 的目标使用场景。
 
 > 在 Triton 的能力边界内，该实现已在可读性、可维护性与性能之间取得了接近最优的平衡。
 
@@ -754,7 +754,7 @@ Note that warp specialization is only supported on Blackwell GPUs and only works
 
 ## 5.8 本章小结
 
-本章从“先测清楚再优化”的原则出发，先建立了可复现的性能基线：用 GPU 事件计时、剔除冷启动开销，并以 TFLOPS 统一衡量不同实现的吞吐。基线对比清晰地展示了：naive attention 既慢又不可扩展，而基于 online softmax 的流式计算能避免中间矩阵物化，使算子在长序列下保持稳定扩展，并逐步进入 compute-bound 区间。
+本章从“先测清楚再优化”的原则出发，先建立了可复现的性能基线：用 GPU 事件计时、剔除冷启动开销，并以 TFLOPS 统一衡量不同实现的吞吐。基线对比清晰地展示了：naive attention 既慢又不可扩展，而基于 online softmax 的流式计算能避免中间矩阵物化，使算子在长序列下保持稳定扩展，并逐步逼近计算资源利用率上限。
 
 在优化路径上，我们依次引入了三类关键手段：
 
