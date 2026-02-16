@@ -1175,9 +1175,9 @@ dS = P ⊙ (dP - delta[:, None])  # element-wise 操作
 
 ### D. 优化 `delta` 计算方式
 
-如 C 所示：在标准实现中，我们需要先计算 `dP = dO @ V^T`。如果直接按照定义实现，就意味着在反向传播中需要对 `K/V` 进行一次额外的全量扫描，这会破坏 FlashAttention 只遍历一次 K/V 的设计目标。
+如 C 所示：如果直接按照原始定义实现，就意味着 `delta` 需要在 K/V loop 中计算，这会导致反复计算，增加额外负担。
 
-通过数学变换可以发现，`delta` 实际上只依赖于 forward 的输出 `O` 与上游梯度 `dO`，完全可以在进入 `K/V` 的 block-wise 反向计算之前，单独、一次性的计算出 `delta`。
+然而，通过数学变换可以发现，`delta` 实际上只依赖于 forward 的输出 `O` 与上游梯度 `dO`，完全可以在进入 `K/V` loop 之前，单独、一次性的计算出 `delta`。
 
 ```python
 delta_i = sum_j( dP_ij * P_ij )
