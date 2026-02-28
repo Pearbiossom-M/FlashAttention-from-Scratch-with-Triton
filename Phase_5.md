@@ -4,7 +4,7 @@
 
 理解并使用 triton 的核心优化技巧，让我们的算子从“能跑”到“飞起来”，尽可能逼近 Pytorch 官方实现
 
-完整代码请参考：[FlashAttention-from-Scratch-with-Triton/code at main · Pearbiossom-M/FlashAttention-from-Scratch-with-Triton](https://github.com/Pearbiossom-M/FlashAttention-from-Scratch-with-Triton/tree/main/code)
+完整代码请参考：[FlashAttention-from-Scratch-with-Triton/code at main · Pearblossom-M/FlashAttention-from-Scratch-with-Triton](https://github.com/Pearblossom-M/FlashAttention-from-Scratch-with-Triton/tree/main/code)
 
 ------
 
