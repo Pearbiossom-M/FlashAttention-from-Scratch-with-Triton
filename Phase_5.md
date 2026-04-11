@@ -301,7 +301,7 @@ TMA 的主要作用有两点：
 
 ### 5.3.3 如何使用 TensorDescriptor ？
 
-首先在 host 侧定义，按照顺序传入：矩阵本身，矩阵的形状，每个维度的 `stride`，搬运的每块数据的形状和越界访问的填充值。
+首先在 host 侧定义，可以直接调用 `TensorDescriptor.from_tensor`，然后传入张量本身和分块大小，也可以手动按照顺序传入：张量本身，张量的形状，每个维度的 `stride`，搬运的每块数据的形状和越界访问的填充值。前者使用简单，后者灵活性更高，可以自由定义 shape 等参数，大家按需选择即可。
 
 然后，将定义好的 desc_q 传入 kernel。kernel 内部加载时传入数据块的起点即可。
 
@@ -310,6 +310,9 @@ TMA 的主要作用有两点：
 from triton.tools.tensor_descriptor import TensorDescriptor
 
 # 1. host 侧直接定义
+# 方法1: 调用 from_tensor 方法
+desc_q = TensorDescriptor.from_tensor(Q, [BLOCK_M, D], padding="zero")
+# 方法2: 手动传入参数
 desc_q = TensorDescriptor(
     Q, shape=[B*H*S_q, D], strides=[D, 1], block_shape=[BLOCK_M, D], padding="zero"
 )
@@ -341,6 +344,8 @@ desc_q = TensorDescriptor(
 > - `strides[-1] == 1` (Last dimension must be contiguous)
 
 总之，4D 描述会引入两维“空维度”，让 **block/索引/形状处理**都更繁琐，而 **2D 展平**能直接把要用的块表达成 `[BLOCK_M, D]`。建议大家记住并使用这个小技巧！
+
+> 由于这里在传入 `shape` 参数时，不是直接传入 `Q.shape`，所以不适合调用 `from_tensor` 方法。后续创建 `tensor descriptor` 全部使用方法2：手动传入参数。
 
 ### 5.3.4 代码实现
 
