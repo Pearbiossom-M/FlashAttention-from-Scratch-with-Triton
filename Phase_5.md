@@ -311,7 +311,7 @@ from triton.tools.tensor_descriptor import TensorDescriptor
 
 # 1. host 侧直接定义
 # 方法1: 调用 from_tensor 方法
-desc_q = TensorDescriptor.from_tensor(Q, [BLOCK_M, D], padding="zero")
+desc_q = TensorDescriptor.from_tensor(Q, [1, 1, BLOCK_M, D], padding="zero")
 # 方法2: 手动传入参数
 desc_q = TensorDescriptor(
     Q, shape=[B*H*S_q, D], strides=[D, 1], block_shape=[BLOCK_M, D], padding="zero"
